@@ -1,4 +1,4 @@
-import { Product, Env, ApiResponse } from '../types';
+import { Product, Inventory, Env, ApiResponse } from '../types';
 import { corsHeaders, handleOptions, createResponse } from '../utils/cors';
 
 export default {
@@ -32,73 +32,75 @@ export default {
 };
 
 async function handlePostRequest(request: Request, env: Env) {
-  const body = await request.json() as Product;
+  const body = await request.json() as Inventory;
   console.log('Received POST data:', body);
 
   // Validate required fields
-  if (!isValidProduct(body)) {
-    return createResponse<ApiResponse<Product>>({
+  if (!isValidInventory(body)) {
+    return createResponse<ApiResponse<Inventory>>({
       success: false,
       error: "Missing required fields",
       details: JSON.stringify(body)
     }, 400);
   }
 
-  const result = await insertProduct(env.DB, body);
+  const result = await insertInventory(env.DB, body);
 
   if (!result.success) {
     return createResponse<ApiResponse<null>>({
       success: false,
-      error: "Failed to insert product"
+      error: "Failed to insert inventory"
     }, 500);
   }
 
-  const newProduct = await getProductById(env.DB, result.id);
+  const newInventory = await getInventoryById(env.DB, result.id);
 
-  if (!newProduct) {
+  if (!newInventory) {
     return createResponse<ApiResponse<null>>({
       success: false,
-      error: "Failed to retrieve created product"
+      error: "Failed to retrieve created inventory"
     }, 500);
   }
 
-  return createResponse<ApiResponse<Product>>({
+  return createResponse<ApiResponse<Inventory>>({
     success: true,
-    data: newProduct
+    data: newInventory
   });
 }
 
 async function handleGetRequest(env: Env) {
   const { results } = await env.DB.prepare(
-    "SELECT * FROM products ORDER BY id DESC"
-  ).all<Product>();
+    "SELECT * FROM inventory ORDER BY id DESC"
+  ).all<Inventory>();
 
-  return createResponse<Product[]>(results);
+  return createResponse<Inventory[]>(results);
 }
 
-async function insertProduct(db: D1Database, product: Product) {
+async function insertInventory(db: D1Database, inventory: Inventory) {
   const stmt = db.prepare(`
-    INSERT INTO products (
+    INSERT INTO inventory (
       productName,
-      category,
-      shelfLife,
-      shelfLifeUnit,
-      unlimitedShelfLife,
+      harvestedDate,
+      quality,
+      quantity,
       packUnit,
-      description,
-      productImage
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      pricePerUnit,
+      sku,
+      continueSellingWhenOutOfStock,
+      notifyWhenInventoryLessThan
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const result = await stmt.bind(
-    product.productName.trim(),
-    product.category.trim(),
-    product.unlimitedShelfLife ? null : product.shelfLife,
-    product.unlimitedShelfLife ? null : product.shelfLifeUnit,
-    product.unlimitedShelfLife ? 1 : 0,
-    product.packUnit.trim(),
-    product.description?.trim() || null,
-    product.productImage || null
+    inventory.productName.trim(),
+    inventory.harvestedDate,
+    inventory.quality?.trim() || null,
+    inventory.quantity,
+    inventory.packUnit.trim(),
+    inventory.pricePerUnit,
+    inventory.sku.trim(),
+    inventory.continueSellingWhenOutOfStock ? 1 : 0,
+    inventory.notifyWhenInventoryLessThan
   ).run();
 
   return {
@@ -107,20 +109,23 @@ async function insertProduct(db: D1Database, product: Product) {
   };
 }
 
-async function getProductById(db: D1Database, id: number | undefined): Promise<Product | null> {
+async function getInventoryById(db: D1Database, id: number | undefined): Promise<Inventory | null> {
   if (!id) return null;
 
   const result = await db.prepare(
-    "SELECT * FROM products WHERE id = ?"
-  ).bind(id).first<Product>();
+    "SELECT * FROM inventory WHERE id = ?"
+  ).bind(id).first<Inventory>();
 
   return result || null;
 }
 
-function isValidProduct(product: Product): boolean {
+function isValidInventory(inventory: Inventory): boolean {
   return !!(
-    product.productName &&
-    product.category &&
-    product.packUnit
+    inventory.productName &&
+    inventory.harvestedDate &&
+    inventory.quantity &&
+    inventory.packUnit &&
+    inventory.pricePerUnit &&
+    inventory.sku
   );
 }
