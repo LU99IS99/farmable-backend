@@ -32,7 +32,22 @@ export default {
 };
 
 async function handlePostRequest(request: Request, env: Env) {
-  const body = await request.json() as Inventory;
+  const formData = await request.formData();
+  const body = JSON.parse(formData.get('data') as string) as Inventory;
+  const imageFile = formData.get('image') as File;
+
+  // 限制图片大小为2MB
+  const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+  if (imageFile.size > MAX_IMAGE_SIZE) {
+    return createResponse<ApiResponse<null>>({
+      success: false,
+      error: "Image size exceeds the 2MB limit"
+    }, 400);
+  }
+
+  // 读取图片数据
+  const imageData = await imageFile.arrayBuffer();
+
   console.log('Received POST data:', body);
 
   // Validate required fields
@@ -44,7 +59,7 @@ async function handlePostRequest(request: Request, env: Env) {
     }, 400);
   }
 
-  const result = await insertInventory(env.DB, body);
+  const result = await insertInventory(env.DB, body, imageData);
 
   if (!result.success) {
     return createResponse<ApiResponse<null>>({
@@ -76,7 +91,7 @@ async function handleGetRequest(env: Env) {
   return createResponse<Inventory[]>(results);
 }
 
-async function insertInventory(db: D1Database, inventory: Inventory) {
+async function insertInventory(db: D1Database, inventory: Inventory, imageData: ArrayBuffer) {
   const stmt = db.prepare(`
     INSERT INTO inventory (
       productName,
@@ -87,8 +102,9 @@ async function insertInventory(db: D1Database, inventory: Inventory) {
       pricePerUnit,
       sku,
       continueSellingWhenOutOfStock,
-      notifyWhenInventoryLessThan
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      notifyWhenInventoryLessThan,
+      productImage
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const result = await stmt.bind(
@@ -100,7 +116,8 @@ async function insertInventory(db: D1Database, inventory: Inventory) {
     inventory.pricePerUnit,
     inventory.sku.trim(),
     inventory.continueSellingWhenOutOfStock ? 1 : 0,
-    inventory.notifyWhenInventoryLessThan
+    inventory.notifyWhenInventoryLessThan,
+    new Uint8Array(imageData) // 存储图片数据
   ).run();
 
   return {

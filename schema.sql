@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS products (
   unlimitedShelfLife BOOLEAN NOT NULL DEFAULT false,
   packUnit TEXT NOT NULL,
   description TEXT,
-  productImage TEXT
+  productImage BLOB -- 新增字段，用于存储图片数据
 );
 
 DROP TABLE IF EXISTS inventory;
