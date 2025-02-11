@@ -4,6 +4,5 @@ compatibility_date = "2025-02-01"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "
-farmablebackendtest-db"
+database_name = "farmablebackendtest-db"
 database_id = "6b7333cf-d729-41db-ac63-e5bef6350a7f"
