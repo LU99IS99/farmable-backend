@@ -1,7 +1,3 @@
-name = "farmable-backend"
-main = "functions/api/products.ts"
-compatibility_date = "2025-02-01"
-
 [[d1_databases]]
 binding = "DB"
 database_name = "farmablebackendtest"
