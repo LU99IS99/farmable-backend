@@ -1,20 +1,21 @@
 export const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Accept",
-    "Access-Control-Max-Age": "86400",
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
 };
 
 export function handleOptions() {
     return new Response(null, {
-        headers: corsHeaders,
-        status: 204,
+        headers: corsHeaders
     });
 }
 
-export function createResponse<T>(data: T, status: number = 200) {
-    return Response.json(data, {
+export function createResponse<T>(data: T, status = 200) {
+    return new Response(JSON.stringify(data), {
         status,
-        headers: corsHeaders,
+        headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+        },
     });
 }

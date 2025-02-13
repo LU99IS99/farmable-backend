@@ -8,19 +8,5 @@ CREATE TABLE IF NOT EXISTS products (
   unlimitedShelfLife BOOLEAN NOT NULL DEFAULT false,
   packUnit TEXT NOT NULL,
   description TEXT,
-  productImage BLOB -- 新增字段，用于存储图片数据
-);
-
-DROP TABLE IF EXISTS inventory;
-CREATE TABLE IF NOT EXISTS inventory (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  productName TEXT NOT NULL,
-  harvestedDate DATE NOT NULL,
-  quality TEXT,
-  quantity INTEGER NOT NULL,
-  packUnit TEXT NOT NULL,
-  pricePerUnit DECIMAL(10, 2) NOT NULL,
-  sku TEXT NOT NULL,
-  continueSellingWhenOutOfStock BOOLEAN DEFAULT false,
-  notifyWhenInventoryLessThan INTEGER DEFAULT 10
+  productImage TEXT
 );
