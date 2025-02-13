@@ -34,7 +34,15 @@ export default {
 async function handlePostRequest(request: Request, env: Env) {
   const formData = await request.formData();
   const body = JSON.parse(formData.get('data') as string) as Inventory;
-  const imageFile = formData.get('image') as File;
+  const imageFile = formData.get('image');
+
+  // 检查 imageFile 是否为 File 类型
+  if (!(imageFile instanceof File)) {
+    return createResponse<ApiResponse<null>>({
+      success: false,
+      error: "Invalid image file"
+    }, 400);
+  }
 
   // 限制图片大小为2MB
   const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
