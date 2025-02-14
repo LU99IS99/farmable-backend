@@ -1,5 +1,5 @@
 name = "farmablebackendtest"
-main = "dist/functions/api/products.js"
+main = "dist/api/products.js"
 compatibility_date = "2025-02-01"
 
 [[d1_databases]]
