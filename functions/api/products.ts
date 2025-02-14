@@ -185,9 +185,9 @@ async function handlePostRequest(request: Request, env: Env) {
     };
 
     const imageFile = formData.get('productImage') as unknown as File;
-    if (imageFile instanceof File) {
+    if (imageFile) {
       const imageData = await imageFile.arrayBuffer();
-      product.productImage = new Uint8Array(imageData).toString();
+      product.productImage = btoa(String.fromCharCode(...new Uint8Array(imageData)));
     }
 
     console.log('Parsed request body:', product);
