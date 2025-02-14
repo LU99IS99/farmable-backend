@@ -189,10 +189,6 @@ async function handlePostRequest(request: Request, env: Env) {
       const imageData = await imageFile.arrayBuffer();
       product.productImage = new Uint8Array(imageData).toString();
     }
-    if (imageFile) {
-      const imageData = await imageFile.arrayBuffer();
-      product.productImage = new Uint8Array(imageData).toString();
-    }
 
     console.log('Parsed request body:', product);
 
