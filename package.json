@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "dev": "wrangler pages dev functions/api/products.ts --compatibility-date=2024-01-31",
-        "deploy": "wrangler pages deploy ."
+        "deploy": "wrangler pages deploy .",
+        "build": "tsc"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20250129.0",
