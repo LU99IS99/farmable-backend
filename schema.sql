@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS products (
   unlimitedShelfLife BOOLEAN NOT NULL DEFAULT false,
   packUnit TEXT NOT NULL,
   description TEXT,
-  productImage TEXT
+  productImage BLOB
 );
