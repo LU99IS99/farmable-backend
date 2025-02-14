@@ -11,5 +11,8 @@
         "@cloudflare/workers-types": "^4.20250129.0",
         "typescript": "~5.7.2",
         "wrangler": "^3.28.1"
+    },
+    "dependencies": {
+        "hono": "^4.7.1"
     }
 }
