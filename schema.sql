@@ -1,12 +1,12 @@
-DROP TABLE IF EXISTS products;
 CREATE TABLE IF NOT EXISTS products (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  productName TEXT NOT NULL,
-  category TEXT NOT NULL,
-  shelfLife INTEGER,
-  shelfLifeUnit TEXT,
-  unlimitedShelfLife BOOLEAN NOT NULL DEFAULT false,
-  packUnit TEXT NOT NULL,
-  description TEXT,
-  productImage BLOB
+  product_id           INTEGER PRIMARY KEY,
+  product_name         TEXT NOT NULL,
+  category             TEXT,
+  average_shelf_life   INTEGER,
+  unlimited_shelf_life BOOLEAN,
+  pack_unit            TEXT,
+  description          TEXT,
+  product_image        BLOB,          -- 新增: 图片字段
+  created_at           TEXT,
+  updated_at           TEXT
 );
